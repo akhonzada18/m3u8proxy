@@ -26,9 +26,25 @@ BunnySDK.net.http.serve(async (request) => {
   return new Response("Not Found", { status: 404 });
 });
 
+function getCustomHeaders(targetUrl) {
+  const headers = {};
+  if (targetUrl.includes("tubeplx")) {
+    headers.Referer = "https://vidwish.live/";
+  } else if (targetUrl.includes("dotstream")) {
+    headers.Referer = "https://megaplay.buzz/";
+  }
+  headers["User-Agent"] = "Mozilla/5.0 ...";
+  return headers;
+}
+
 async function proxyM3U8(url, headers) {
   const targetUrl = url.searchParams.get("url");
   const targetHeaders = JSON.parse(url.searchParams.get("headers") || "{}");
+
+  const customHeaders = getCustomHeaders(targetUrl);
+
+  console.log({ targetUrl, targetHeaders });
+
 
   if (!targetUrl) {
     return new Response("URL is required", { status: 400 });
@@ -37,7 +53,7 @@ async function proxyM3U8(url, headers) {
   try {
     // Fetch the M3U8 file
     const response = await fetch(targetUrl, {
-      headers: { Referer: REFERER },
+      headers: customHeaders,
     });
     if (!response.ok) {
       return new Response("Failed to fetch the M3U8 file", {
