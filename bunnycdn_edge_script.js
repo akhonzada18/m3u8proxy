@@ -39,13 +39,13 @@ function getCustomHeaders(targetUrl) {
 
 async function proxyM3U8(url, headers) {
   const targetUrl = url.searchParams.get("url");
-  // const targetHeaders = JSON.parse(url.searchParams.get("headers") || "{}");
+  const targetHeaders = JSON.parse(url.searchParams.get("headers") || "{}");
 
   const customHeaders = getCustomHeaders(targetUrl);
 
-  // console.log({ targetUrl, targetHeaders });
+  console.log({ targetUrl, targetHeaders });
 
-  // console.log("?????????????????????????");
+  console.log("?????????????????????????");
   
 
 
@@ -75,16 +75,9 @@ async function proxyM3U8(url, headers) {
         if (line.startsWith("#EXT-X-KEY:")) {
           const regex = /https?:\/\/[^\""\s]+/g;
           const keyUrl = regex.exec(line)?.[0] ?? "";
-
-          // const newUrl = `/ts-proxy?url=${encodeURIComponent(
-          //   keyUrl
-          // )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
-
-
           const newUrl = `/ts-proxy?url=${encodeURIComponent(
             keyUrl
-          )}`;
-
+          )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
           return line.replace(keyUrl, newUrl);
         }
         return line;
@@ -95,19 +88,19 @@ async function proxyM3U8(url, headers) {
           uri = new URL(line, targetUrl);
           return `${web_server_url}/m3u8-proxy?url=${encodeURIComponent(
             uri.href
-          )}`;
+          )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
         } else if (!line.endsWith(".ts")) {
           // Handle TS segments
           uri = new URL(line, targetUrl);
           return `${web_server_url}/ts-proxy?url=${encodeURIComponent(
             uri.href
-          )}`;
+          )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
         } else {
           // Handle Other segments
           uri = new URL(line, targetUrl); 
           return `${web_server_url}/ts-proxy?url=${encodeURIComponent(
             uri.href
-          )}`;
+          )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
         }
       }
     });
@@ -129,8 +122,6 @@ async function proxyTs(url, headers, request) {
   const targetUrl = url.searchParams.get("url");
   const targetHeaders = JSON.parse(url.searchParams.get("headers") || "{}");
 
-    const customHeaders = getCustomHeaders(targetUrl);
-
   if (!targetUrl) {
     return new Response("URL is required", { status: 400 });
   }
@@ -138,7 +129,7 @@ async function proxyTs(url, headers, request) {
   try {
     const response = await fetch(targetUrl, {
       method: request.method,
-      headers: customHeaders,
+      headers: { Referer: REFERER },
     });
 
     if (!response.ok) {
