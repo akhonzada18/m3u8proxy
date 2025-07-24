@@ -8,21 +8,6 @@ const port = process.env.PORT || 8080;
 const web_server_url = process.env.PUBLIC_URL || `http://${host}:${port}`;
 
 export default async function proxyM3U8(url, headers, res) {
-  // Parse headers from query param if not passed directly
-  try {
-    const parsedUrl = new URL(url);
-    const headersParam = parsedUrl.searchParams.get("headers");
-
-    if (headersParam && (!headers || Object.keys(headers).length === 0)) {
-      headers = JSON.parse(headersParam);
-    }
-  } catch (err) {
-    console.warn("Failed to parse headers from URL:", err.message);
-  }
-
-  console.log({url, headers});
-  
-
   const req = await axios(url, {
     headers: headers,
   }).catch((err) => {
