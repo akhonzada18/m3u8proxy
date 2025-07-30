@@ -6,7 +6,9 @@ import * as BunnySDK from "https://esm.sh/@bunny.net/edgescript-sdk@0.11.2";
  */
 
 // Default server URL provided manually
-const web_server_url = "<public_url_of_edge_script>"; // Replace this with your public URL
+// const web_server_url = "<public_url_of_edge_script>"; // Replace this with your public URL
+const web_server_url = "https://tssm3u8proxy.me";
+
 const REFERER = "<custom_referer>";
 
 BunnySDK.net.http.serve(async (request) => {
@@ -37,7 +39,7 @@ async function proxyM3U8(url, headers) {
   try {
     // Fetch the M3U8 file
     const response = await fetch(targetUrl, {
-      headers: { Referer: REFERER },
+      headers: targetHeaders,
     });
     if (!response.ok) {
       return new Response("Failed to fetch the M3U8 file", {
@@ -58,7 +60,7 @@ async function proxyM3U8(url, headers) {
           const keyUrl = regex.exec(line)?.[0] ?? "";
           const newUrl = `/ts-proxy?url=${encodeURIComponent(
             keyUrl
-          )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
+          )}&headers=${encodeURIComponent(JSON.stringify(targetHeaders))}`;
           return line.replace(keyUrl, newUrl);
         }
         return line;
@@ -69,19 +71,19 @@ async function proxyM3U8(url, headers) {
           uri = new URL(line, targetUrl);
           return `${web_server_url}/m3u8-proxy?url=${encodeURIComponent(
             uri.href
-          )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
+          )}&headers=${encodeURIComponent(JSON.stringify(targetHeaders))}`;
         } else if (!line.endsWith(".ts")) {
           // Handle TS segments
           uri = new URL(line, targetUrl);
           return `${web_server_url}/ts-proxy?url=${encodeURIComponent(
             uri.href
-          )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
+          )}&headers=${encodeURIComponent(JSON.stringify(targetHeaders))}`;
         } else {
           // Handle Other segments
           uri = new URL(line, targetUrl); 
           return `${web_server_url}/ts-proxy?url=${encodeURIComponent(
             uri.href
-          )}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
+          )}&headers=${encodeURIComponent(JSON.stringify(targetHeaders))}`;
         }
       }
     });
@@ -110,7 +112,7 @@ async function proxyTs(url, headers, request) {
   try {
     const response = await fetch(targetUrl, {
       method: request.method,
-      headers: { Referer: REFERER },
+      headers: targetHeaders,
     });
 
     if (!response.ok) {
