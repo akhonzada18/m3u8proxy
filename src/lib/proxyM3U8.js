@@ -7,7 +7,15 @@ const host = process.env.HOST || "127.0.0.1";
 const port = process.env.PORT || 8080;
 const web_server_url = process.env.PUBLIC_URL || `http://${host}:${port}`;
 
-export default async function proxyM3U8(url, headers, res) {
+export default async function proxyM3U8(url, res) {
+
+    const headers = {
+      Referer: "https://megacloud.blog/",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+    };
+
+
   const req = await axios(url, {
     headers: headers,
   }).catch((err) => {
@@ -32,18 +40,14 @@ export default async function proxyM3U8(url, headers, res) {
           const regex = /https?:\/\/[^\""\s]+/g;
           const url = `${web_server_url}${
             "/ts-proxy?url=" +
-            encodeURIComponent(regex.exec(line)?.[0] ?? "") +
-            "&headers=" +
-            encodeURIComponent(JSON.stringify(headers))
+            encodeURIComponent(regex.exec(line)?.[0] ?? "")
           }`;
           newLines.push(line.replace(regex, url));
         } else if (line.startsWith("#EXT-X-MEDIA:TYPE=AUDIO")) {
           const regex = /https?:\/\/[^\""\s]+/g;
           const url = `${web_server_url}${
             "/m3u8-proxy?url=" +
-            encodeURIComponent(regex.exec(line)?.[0] ?? "") +
-            "&headers=" +
-            encodeURIComponent(JSON.stringify(headers))
+            encodeURIComponent(regex.exec(line)?.[0] ?? "")
           }`;
           newLines.push(line.replace(regex, url));
         } else {
@@ -55,9 +59,7 @@ export default async function proxyM3U8(url, headers, res) {
           `${
             web_server_url +
             "/m3u8-proxy?url=" +
-            encodeURIComponent(uri.href) +
-            "&headers=" +
-            encodeURIComponent(JSON.stringify(headers))
+            encodeURIComponent(uri.href)
           }`
         );
       }
@@ -98,9 +100,7 @@ export default async function proxyM3U8(url, headers, res) {
           const regex = /https?:\/\/[^\""\s]+/g;
           const url = `${web_server_url}${
             "/ts-proxy?url=" +
-            encodeURIComponent(regex.exec(line)?.[0] ?? "") +
-            "&headers=" +
-            encodeURIComponent(JSON.stringify(headers))
+            encodeURIComponent(regex.exec(line)?.[0] ?? "")
           }`;
           newLines.push(line.replace(regex, url));
         } else {
@@ -112,9 +112,7 @@ export default async function proxyM3U8(url, headers, res) {
         newLines.push(
           `${web_server_url}${
             "/ts-proxy?url=" +
-            encodeURIComponent(uri.href) +
-            "&headers=" +
-            encodeURIComponent(JSON.stringify(headers))
+            encodeURIComponent(uri.href)
           }`
         );
       }

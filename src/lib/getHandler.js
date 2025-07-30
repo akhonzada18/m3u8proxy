@@ -1,13 +1,13 @@
-import { isValidHostName } from "./isValidHostName.js";
-import { getProxyForUrl } from "proxy-from-env";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { fileURLToPath } from "url";
 import { dirname } from "path";
-import withCORS from "./withCORS.js";
+import { getProxyForUrl } from "proxy-from-env";
+import { fileURLToPath } from "url";
+import { isValidHostName } from "./isValidHostName.js";
 import parseURL from "./parseURL.js";
 import proxyM3U8 from "./proxyM3U8.js";
 import { proxyTs } from "./proxyTS.js";
+import withCORS from "./withCORS.js";
 
 export default function getHandler(options, proxy) {
   const corsAnywhere = {
@@ -108,27 +108,18 @@ export default function getHandler(options, proxy) {
     if (!/^\/https?:/.test(req.url) && !isValidHostName(location.hostname)) {
       const uri = new URL(req.url ?? web_server_url, "http://localhost:3000");
       if (uri.pathname === "/m3u8-proxy") {
-        let headers = {};
-        try {
-          headers = JSON.parse(uri.searchParams.get("headers") ?? "{}");
-        } catch (e) {
-          res.writeHead(500);
-          res.end(e.message);
-          return;
-        }
+        console.log("Proxying M3U8 request");
+        
+        
         const url = uri.searchParams.get("url");
-        return proxyM3U8(url ?? "", headers, res);
+        return proxyM3U8(url ?? "", res);
+
       } else if (uri.pathname === "/ts-proxy") {
-        let headers = {};
-        try {
-          headers = JSON.parse(uri.searchParams.get("headers") ?? "{}");
-        } catch (e) {
-          res.writeHead(500);
-          res.end(e.message);
-          return;
-        }
+        console.log("Proxying TS request");
+        
         const url = uri.searchParams.get("url");
-        return proxyTs(url ?? "", headers, req, res);
+        return proxyTs(url ?? "", req, res);
+
       } else if (uri.pathname === "/") {
         return res.end(readFileSync(join(__dirname, "../index.html")));
       } else {
