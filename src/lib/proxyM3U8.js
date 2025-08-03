@@ -10,11 +10,15 @@ const web_server_url = process.env.PUBLIC_URL || `http://${host}:${port}`;
 // Determine Referer based on URL
 function getRefererForURL(url) {
   if (url.includes("tubeplx")) {
+    console.log("Using vidwish referer for URL:", url);
+    
     return "https://vidwish.live/";
   }
   if (url.includes("dotstream")) {
+    console.log("Using megaplay referer for URL:", url);
     return "https://megaplay.buzz/";
   }
+  console.log("Using default referer for URL:", url);
   return "https://megacloud.blog/";
 }
 
