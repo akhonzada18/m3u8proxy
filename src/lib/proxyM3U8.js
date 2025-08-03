@@ -7,10 +7,21 @@ const host = process.env.HOST || "127.0.0.1";
 const port = process.env.PORT || 8080;
 const web_server_url = process.env.PUBLIC_URL || `http://${host}:${port}`;
 
+// Determine Referer based on URL
+function getRefererForURL(url) {
+  if (url.includes("tubeplx")) {
+    return "https://vidwish.live/";
+  }
+  if (url.includes("dotstream")) {
+    return "https://megaplay.buzz/";
+  }
+  return "https://megacloud.blog/";
+}
+
 export default async function proxyM3U8(url, res) {
 
     const headers = {
-      Referer: "https://megacloud.blog/",
+      Referer: getRefererForURL(url),
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
     };

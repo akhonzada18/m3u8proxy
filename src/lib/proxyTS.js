@@ -1,5 +1,6 @@
 import http from "node:http";
 import https from "node:https";
+import getRefererForURL from "./getReferer.js";
 
 export async function proxyTs(url, req, res) {
   let forceHTTPS = url.startsWith("https://");
@@ -11,7 +12,7 @@ export async function proxyTs(url, req, res) {
     path: uri.pathname + uri.search,
     method: req.method,
     headers: {
-      Referer: "https://megacloud.blog/",
+      Referer: getRefererForURL(url),
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
     },
