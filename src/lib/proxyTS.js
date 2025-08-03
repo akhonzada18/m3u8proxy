@@ -1,7 +1,16 @@
 import http from "node:http";
 import https from "node:https";
-import getRefererForURL from "./getReferer.js";
 
+// Determine Referer based on URL
+function getRefererForURL(url) {
+  if (url.includes("tubeplx")) {
+    return "https://vidwish.live/";
+  }
+  if (url.includes("dotstream")) {
+    return "https://megaplay.buzz/";
+  }
+  return "https://megacloud.blog/";
+}
 export async function proxyTs(url, req, res) {
   let forceHTTPS = url.startsWith("https://");
 
